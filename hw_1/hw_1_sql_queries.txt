@@ -1,0 +1,51 @@
+1) count records
+----------
+select
+count(1)
+from green_taxi_data
+where cast(lpep_pickup_datetime as date) = '2019-01-15'
+and cast(lpep_dropoff_datetime as date) = '2019-01-15'
+
+2) largest trip for each day
+----------
+select
+cast(lpep_pickup_datetime as date),
+max(trip_distance)
+from green_taxi_data
+group by cast(lpep_pickup_datetime as date)
+order by max(trip_distance) desc
+
+3) the number of passengers
+----------
+select
+cast(lpep_pickup_datetime as date),
+count(1)
+from green_taxi_data
+where cast(lpep_pickup_datetime as date) = '2019-01-01'
+and passenger_count = 2
+group by cast(lpep_pickup_datetime as date)
+
+4) largest tip
+----------
+with cte1 as
+(
+select
+t1."PULocationID",
+t1."DOLocationID",
+t1.tip_amount,
+t2."Zone" as pu_zone,
+t3."Zone" as do_zone
+from green_taxi_data t1
+join taxi_zone t2
+	on t1."PULocationID" = t2."LocationID"
+join taxi_zone t3
+	on t1."DOLocationID" = t3."LocationID"
+)
+
+select
+do_zone,
+max(tip_amount)
+from cte1
+where pu_zone = 'Astoria'
+group by do_zone
+order by max(tip_amount) desc
