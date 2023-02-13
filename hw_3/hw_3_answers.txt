@@ -1,0 +1,7 @@
+1) 43,244,696
+2) 0 MB for the External Table and 317.94MB for the BQ Table
+3) 717,748
+4) Partition by pickup_datetime Cluster on affiliated_base_number
+5) 647.87 MB for non-partitioned table and 23.06 MB for the partitioned table
+6) GCP Bucket
+7) False
