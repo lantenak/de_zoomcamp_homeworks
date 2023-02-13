@@ -1,0 +1,42 @@
+CREATE OR REPLACE EXTERNAL TABLE ny-rides-lantenak.trips_data_all.fhv_tripdata
+OPTIONS (
+  format = 'PARQUET',
+  uris = ['gs://dtc_data_lake_ny-rides-lantenak/data/fhv/fhv_tripdata_2019-*.parquet']
+);
+
+SELECT 
+COUNT(*) 
+FROM ny-rides-lantenak.trips_data_all.fhv_tripdata;
+
+SELECT 
+COUNT(DISTINCT(Affiliated_base_number)) 
+FROM ny-rides-lantenak.trips_data_all.fhv_tripdata;
+
+CREATE OR REPLACE TABLE ny-rides-lantenak.trips_data_all.fhv_nonpartitioned_tripdata
+AS 
+SELECT * FROM ny-rides-lantenak.trips_data_all.fhv_tripdata;
+
+SELECT 
+COUNT(DISTINCT(Affiliated_base_number)) 
+FROM ny-rides-lantenak.trips_data_all.fhv_nonpartitioned_tripdata;
+
+SELECT 
+COUNT(*) 
+FROM ny-rides-lantenak.trips_data_all.fhv_nonpartitioned_tripdata 
+WHERE PUlocationID = -1 and DOlocationID = -1;
+
+CREATE OR REPLACE TABLE ny-rides-lantenak.trips_data_all.fhv_partitioned_tripdata
+PARTITION BY DATE(pickup_datetime)
+CLUSTER BY Affiliated_base_number AS (
+  SELECT * FROM ny-rides-lantenak.trips_data_all.fhv_tripdata
+);
+
+SELECT 
+DISTINCT(Affiliated_base_number) 
+FROM ny-rides-lantenak.trips_data_all.fhv_nonpartitioned_tripdata
+WHERE DATE(pickup_datetime) BETWEEN '2019-03-01' AND '2019-03-31';
+
+SELECT 
+DISTINCT(Affiliated_base_number) 
+FROM ny-rides-lantenak.trips_data_all.fhv_partitioned_tripdata
+WHERE DATE(pickup_datetime) BETWEEN '2019-03-01' AND '2019-03-31';
